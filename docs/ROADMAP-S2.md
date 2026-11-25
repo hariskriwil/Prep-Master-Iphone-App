@@ -15,7 +15,18 @@ Tanggal bertanda **(perkiraan)** disusun dari pola tahun-tahun sebelumnya. Cek s
 - **Target:** Wharton, Chicago Booth, Kellogg, Columbia, MIT Sloan
 - **Cadangan kuat (QS top 10):** Oxford Saïd, Cambridge Judge, Imperial, NUS
 
-## Jalur Utama: intake Agustus/September 2028 (direkomendasikan)
+## Timeline menyesuaikan skor
+Ada tiga pilihan intake. Catat setiap skor latihan dan skor resmi di tab **Roadmap**. Aplikasi akan memilih intake **paling cepat** yang syaratnya masih terkejar, dan roadmap ikut berpindah otomatis. Anda tetap bisa memilih jalur secara manual.
+
+| Intake | Syarat skor resmi | Tenggat (perkiraan) | Sasaran |
+|---|---|---|---|
+| **Kilat: Agu/Sep 2027** | IELTS 7.0+ · GMAT 655+ | IELTS 15 Feb 2027 · GMAT 31 Mar 2027 | US Round 3 (±April; HBS tidak ada R3), tahap akhir Oxford/Cambridge/Imperial/NUS, LPDP Tahap 1 2027 |
+| **Januari 2028** | IELTS 7.0+ · GMAT 675+ | IELTS 15 Jul 2027 · GMAT 15 Sep 2027 | Columbia J-Term (deadline ±awal Okt; tanpa magang musim panas), LPDP Tahap 2 2027 |
+| **Agu/Sep 2028** | IELTS 7.0+ · GMAT 665+ (target 695) | 15–25 Agu 2027 untuk Round 1 | Round 1 M7 + QS top 10, LPDP Tahap 1 2028 |
+
+Sebuah jalur berstatus **Di jalur** jika kenaikan yang dibutuhkan per minggu ≤ laju realistis. Asumsinya: GMAT +8 poin/minggu, IELTS +0.5 band per 5 minggu, dengan belajar 10–15 jam/minggu dan dikurangi 2 minggu untuk booking tes dan keluarnya skor.
+
+## Jalur Agustus/September 2028 (bawaan sebelum ada skor)
 MBA top AS realistis lewat Round 1 (September 2027). Intake 2027 untuk sekolah AS praktis sudah lewat.
 
 | Waktu | Kegiatan | LoA? |
@@ -35,8 +46,6 @@ MBA top AS realistis lewat Round 1 (September 2027). Intake 2027 untuk sekolah A
 | Mei – Jul 2028 | I-20, visa F-1 (atau CAS untuk UK), PK LPDP | |
 | Agu – Sep 2028 | Mulai kuliah | |
 
-## Jalur Cepat: intake September 2027 (opsional, peluang kecil)
-Hanya untuk MBA satu tahun di UK (Oxford/Cambridge/Imperial, tahap akhir Mar–Apr 2027) dengan LPDP Tahap 1 2027 (Jan–Feb). Butuh IELTS pertengahan Januari dan GMAT akhir Februari.
 
 ## Ritme belajar
 - **Setiap hari 06:00:** 10 soal di Prep Master. 5 IELTS + 5 GMAT; otomatis menjadi 3 IELTS + 7 GMAT setelah tes IELTS dicentang di Roadmap.

@@ -12,6 +12,8 @@
  *     cat       "test" | "scholarship" | "admission" | "loa" | "prep" | "visa"
  *     estimate  true = tanggal perkiraan dari pola tahun sebelumnya, WAJIB dicek ulang
  *   tasks[]     { id, text } — checklist yang bisa dicentang (tersimpan di akun)
+ *   RULES{trackId: gate[]}  syarat skor resmi + tenggat per jalur (mesin rekomendasi)
+ *   ASSUMPTIONS laju kenaikan skor yang dipakai untuk menilai "masih terkejar"
  *   GMAT_HEAVY_TASKS  task yang, jika dicentang, menggeser kuis pagi ke 3 IELTS + 7 GMAT
  *   SCHOLARSHIPS[]  ringkasan aturan LoA per beasiswa
  */
@@ -143,9 +145,9 @@
 
   const S = {
     id: "S",
-    name: "Jalur Cepat: Intake September 2027 (opsional)",
-    intake: "2027-09-01",
-    summary: "Hanya realistis untuk MBA satu tahun di UK (Oxford, Cambridge, Imperial) yang masih membuka tahap akhir, dengan dana LPDP Tahap 1 2027. MBA top AS untuk 2027 praktis sudah lewat (Round 2 Januari 2027 tidak terkejar tanpa skor GMAT). Peluangnya kecil; anggap sebagai latihan jika ingin mencoba.",
+    name: "Jalur Kilat: Intake Agustus/September 2027",
+    intake: "2027-08-20",
+    summary: "Terbuka jika skor naik cepat: IELTS 7.0+ sebelum pertengahan Februari dan GMAT resmi 655+ sebelum akhir Maret 2027. Sasaran: Round 3 sekolah AS (Stanford, Wharton, Booth, Kellogg, Sloan, sekitar April; HBS tidak punya Round 3) serta tahap akhir Oxford, Cambridge, Imperial dan NUS. Kursi Round 3 sedikit, jadi kirim aplikasi ke 5–6 sekolah sekaligus. Dana: LPDP Tahap 1 2027.",
     milestones: [
       { id: "S1", start: "2026-12-01", end: "2026-12-15", cat: "test", title: "Booking IELTS & GMAT sekarang",
         detail: "IELTS pertengahan Januari, GMAT akhir Februari.",
@@ -161,17 +163,83 @@
         tasks: [{ id: "S3-1", text: "Submit LPDP Tahap 1 2027" }] },
       { id: "S4", start: "2027-02-22", end: "2027-03-31", cat: "test", title: "GMAT Focus", detail: "Satu kali tes, maksimal satu ulangan sebelum akhir Maret.",
         tasks: [{ id: "S4-1", text: "Ambil GMAT Focus" }] },
-      { id: "S5", start: "2027-03-01", end: "2027-04-30", cat: "admission", estimate: true, title: "Tahap akhir Oxford / Cambridge / Imperial",
-        detail: "Cek apakah tahap terakhir masih buka dan apakah sisa kursi realistis.",
-        tasks: [{ id: "S5-1", text: "Submit 2–3 aplikasi tahap akhir" }] },
+      { id: "S5", start: "2027-03-01", end: "2027-04-30", cat: "admission", estimate: true, title: "US Round 3 + tahap akhir UK/NUS",
+        detail: "Perkiraan: Round 3 sekolah AS sekitar awal–pertengahan April; Oxford, Cambridge dan Imperial tahap terakhir Maret–April; NUS ronde terakhir sekitar Maret. Esai disiapkan sejak Januari.",
+        tasks: [
+          { id: "S5-1", text: "Esai & rekomendasi siap paling lambat pertengahan Maret" },
+          { id: "S5-2", text: "Submit Round 3 ke 2–3 sekolah AS" },
+          { id: "S5-3", text: "Submit tahap akhir ke 2–3 sekolah UK/NUS" }
+        ] },
       { id: "S6", start: "2027-04-15", end: "2027-06-30", cat: "loa", title: "Offer & LoA unconditional", detail: "Penuhi syarat offer secepatnya.",
         tasks: [{ id: "S6-1", text: "Dapatkan LoA unconditional dan unggah ke LPDP" }] },
-      { id: "S7", start: "2027-09-01", end: "2027-09-30", cat: "admission", title: "Mulai kuliah", detail: "Jika tidak berhasil, semua skor dan esai dipakai ulang di Jalur Utama.", tasks: [] }
+      { id: "S7", start: "2027-06-01", end: "2027-08-15", cat: "visa", title: "I-20/CAS, visa, berangkat", detail: "Visa F-1 AS: booking wawancara segera setelah I-20 terbit.", tasks: [{ id: "S7-1", text: "Ajukan visa pelajar" }] },
+      { id: "S8", start: "2027-08-20", end: "2027-09-30", cat: "admission", title: "Mulai kuliah", detail: "Jika tidak berhasil, semua skor dan esai dipakai ulang di Jalur Januari 2028 atau Agustus 2028.", tasks: [] }
     ]
   };
 
+  const J = {
+    id: "J",
+    name: "Jalur Januari 2028: Columbia J-Term",
+    intake: "2028-01-05",
+    summary: "Mulai 7 bulan lebih cepat dari Jalur Utama. Columbia Business School (M7) punya intake Januari: program dipadatkan ±16–20 bulan tanpa magang musim panas. Cocok jika tidak pindah bidang karier atau perusahaan Anda menunggu. Syarat: GMAT resmi 675+ sebelum pertengahan September 2027. Aplikasi Round 1 untuk Agustus 2028 dikirim bersamaan sebagai cadangan.",
+    milestones: [
+      { id: "J1", start: "2026-11-25", end: "2026-12-21", cat: "prep", title: "Diagnostik & riset sekolah", detail: "Sama dengan Jalur Utama.",
+        tasks: [{ id: "J1-1", text: "GMAT Official Practice Exam 1 + mock IELTS, catat skornya di aplikasi" }] },
+      { id: "J2", start: "2027-01-04", end: "2027-03-14", cat: "test", title: "Tes IELTS", detail: "Target 7.5, tiap band ≥ 7.0.",
+        tasks: [{ id: "J2-1", text: "Ambil tes IELTS" }] },
+      { id: "J3", start: "2026-12-01", end: "2027-08-31", cat: "test", title: "GMAT Focus: tes 1 ±Mei, tes 2 ±Juli", detail: "Satu bulan lebih awal dari Jalur Utama karena deadline J-Term awal Oktober.",
+        tasks: [
+          { id: "J3-1", text: "Official Practice Exam ≥ 685 dua kali berturut-turut" },
+          { id: "J3-2", text: "Tes GMAT Focus pertama (±Mei 2027)" },
+          { id: "J3-3", text: "Tes kedua (±Juli 2027) jika di bawah target" }
+        ] },
+      { id: "J4", start: "2027-06-01", end: "2027-07-31", cat: "scholarship", estimate: true, title: "LPDP Tahap 2 2027",
+        detail: "LoA tidak wajib saat daftar. Pengumuman diperkirakan akhir tahun, mendekati mulai kuliah Januari. Cek aturan batas mulai studi.",
+        tasks: [{ id: "J4-1", text: "Submit LPDP Tahap 2 2027" }] },
+      { id: "J5", start: "2027-05-15", end: "2027-09-30", cat: "admission", title: "Esai & rekomendasi", detail: "Esai Columbia biasanya rilis sekitar Mei–Juni.",
+        tasks: [{ id: "J5-1", text: "Esai Columbia final" }, { id: "J5-2", text: "Esai Round 1 sekolah lain (cadangan Agustus 2028)" }] },
+      { id: "J6", start: "2027-09-01", end: "2027-10-10", cat: "admission", estimate: true, title: "Submit Columbia J-Term + Round 1 cadangan",
+        detail: "Perkiraan deadline J-Term ±awal Oktober.",
+        tasks: [{ id: "J6-1", text: "Submit Columbia J-Term" }, { id: "J6-2", text: "Submit Round 1 untuk 2–3 sekolah lain" }] },
+      { id: "J7", start: "2027-10-01", end: "2027-11-30", cat: "loa", estimate: true, title: "Interview & keputusan J-Term", detail: "Admit = LoA. Langsung proses I-20.",
+        tasks: [{ id: "J7-1", text: "Interview Columbia" }, { id: "J7-2", text: "Deposit & unggah LoA ke LPDP" }] },
+      { id: "J8", start: "2027-11-15", end: "2027-12-31", cat: "visa", title: "I-20, visa F-1, berangkat", detail: "Waktu visa sempit; booking wawancara hari yang sama I-20 terbit.",
+        tasks: [{ id: "J8-1", text: "Wawancara visa F-1" }] },
+      { id: "J9", start: "2028-01-05", end: "2028-01-31", cat: "admission", title: "Mulai kuliah", detail: "Columbia J-Term.", tasks: [] }
+    ]
+  };
+
+  /*
+   * Gerbang skor per jalur (dipakai mesin rekomendasi di app.js).
+   * gate: { test: "gmat"|"ielts", min: skor resmi minimum, by: tenggat skor resmi, why }
+   * Urutan TRACK_ORDER = dari intake tercepat ke paling lambat.
+   */
+  const RULES = {
+    S: [
+      { test: "ielts", min: 7.0, by: "2027-02-15", why: "agar sempat daftar LPDP Tahap 1 2027" },
+      { test: "gmat", min: 655, by: "2027-03-31", why: "agar sempat US Round 3 dan tahap akhir UK" }
+    ],
+    J: [
+      { test: "ielts", min: 7.0, by: "2027-07-15", why: "agar sempat LPDP Tahap 2 2027" },
+      { test: "gmat", min: 675, by: "2027-09-15", why: "agar sempat deadline Columbia J-Term" }
+    ],
+    P: [
+      { test: "ielts", min: 7.0, by: "2027-08-15", why: "sebelum Round 1" },
+      { test: "gmat", min: 665, by: "2027-08-25", why: "agar sempat Round 1 (Round 2 masih bisa sampai ±Desember)" }
+    ]
+  };
+  const TRACK_ORDER = ["S", "J", "P"];
+
+  // Asumsi laju kenaikan dengan belajar serius 10–15 jam/minggu. Dipakai untuk menilai apakah target masih terkejar.
+  const ASSUMPTIONS = {
+    gmatPointsPerWeek: 8,
+    ieltsBandPerWeek: 0.1,
+    bufferWeeks: 2,
+    note: "Asumsi kasar: GMAT Focus naik ±8 poin/minggu dan IELTS ±0.5 band per 5 minggu dengan belajar 10–15 jam/minggu. Dikurangi 2 minggu untuk booking tes dan keluarnya skor."
+  };
+
   // Task yang menandai IELTS sudah selesai → kuis pagi bergeser ke 3 IELTS + 7 GMAT.
-  const GMAT_HEAVY_TASKS = ["P2-2", "S2-1"];
+  const GMAT_HEAVY_TASKS = ["P2-2", "S2-1", "J2-1"];
 
   const SCHOLARSHIPS = [
     { name: "LPDP (reguler, luar negeri)", window: "Perkiraan 2× setahun: Jan–Feb dan Jun–Jul", loa: "Tidak wajib saat daftar. LoA wajib sebelum berangkat.", english: "IELTS min. 6.5 (cek panduan tahun berjalan)", mba: "Ya, untuk kampus di daftar tujuan LPDP (sekolah M7 umumnya masuk; cek daftar terbaru)", status: "Dana utama" },
@@ -187,5 +255,5 @@
     { phase: "Fase 3 (Jun–Okt 2027): esai & Round 1", load: "06:00 kuis · Malam 60 mnt esai · Akhir pekan: revisi esai, ngobrol dengan alumni, persiapan interview" }
   ];
 
-  window.ROADMAP = { PROFILE: PROFILE, GOALS: GOALS, SCHOOLS: SCHOOLS, TRACKS: [P, S], GMAT_HEAVY_TASKS: GMAT_HEAVY_TASKS, SCHOLARSHIPS: SCHOLARSHIPS, WEEKLY: WEEKLY, createdAt: "2026-11-25" };
+  window.ROADMAP = { PROFILE: PROFILE, GOALS: GOALS, SCHOOLS: SCHOOLS, TRACKS: [S, J, P], RULES: RULES, TRACK_ORDER: TRACK_ORDER, ASSUMPTIONS: ASSUMPTIONS, GMAT_HEAVY_TASKS: GMAT_HEAVY_TASKS, SCHOLARSHIPS: SCHOLARSHIPS, WEEKLY: WEEKLY, createdAt: "2026-11-25" };
 })();

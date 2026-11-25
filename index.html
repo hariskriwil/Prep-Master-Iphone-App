@@ -216,6 +216,31 @@ tr:last-child td { border-bottom: 0; }
 .weekly li { display: grid; gap: 2px; font-size: 0.9rem; }
 .weekly span { color: var(--muted); }
 
+/* planner intake */
+.opts { display: grid; gap: 10px; }
+.opt { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; background: var(--bg); }
+.opt.rec { border-color: var(--dawn); background: var(--dawn-soft); }
+.opt.active:not(.rec) { border-color: var(--gmat); }
+.opthead { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.opthead b { font-family: var(--f-display); font-size: 1rem; margin-right: auto; }
+.opt ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.opt li { display: grid; gap: 1px; padding-left: 10px; border-left: 3px solid var(--line); font-size: 0.86rem; }
+.opt li small { color: var(--muted); font-size: 0.8rem; }
+.opt li.g-good { border-left-color: var(--good); } .opt li.g-warn { border-left-color: var(--warn); } .opt li.g-bad { border-left-color: var(--bad); }
+.chip.st-good { background: var(--good-soft); color: var(--good); }
+.chip.st-warn { background: var(--dawn-soft); color: var(--warn); }
+.chip.st-bad { background: var(--bad-soft); color: var(--bad); }
+.chip.recc { background: var(--dawn); color: #fff; }
+.recwhy { font-size: 0.92rem; }
+.scoreform .frow { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 0.9rem; }
+.scoreform select, .scoreform input { width: 100%; min-width: 0; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; }
+.scoreform .primary { justify-self: start; }
+.ferr { color: var(--bad); font-size: 0.85rem; }
+.scorelist { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+.scorelist li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; font-size: 0.88rem; }
+.ghost.sm { padding: 5px 10px; font-size: 0.8rem; }
+.moderow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px !important; }
+
 /* setup */
 .steps { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 0.92rem; }
 .steps code, .mono { font-family: var(--f-mono); font-size: 0.85em; background: var(--sunk); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
@@ -252,8 +277,21 @@ tr:last-child td { border-bottom: 0; }
         <p class="muted small">Buka link ini di Safari dan login ke claude.ai sekali. Progres tersimpan di akun Anda, jadi sama di Safari maupun app Claude.</p>
       </section>
 
+      <section class="panel popup">
+        <h2>1. Pop-up otomatis setiap jam 06:00</h2>
+        <p class="muted small">Langkah paling penting, cukup 1 menit. Kuis terbuka sendiri di layar tanpa perlu diketuk.</p>
+        <ol class="steps">
+          <li>Buka app <b>Shortcuts</b> → tab <b>Automation</b> → <b>+</b> (atau <b>New Automation</b>).</li>
+          <li>Pilih <b>Time of Day</b> → <b>06:00</b> → Repeat <b>Daily</b>.</li>
+          <li>Pilih <b>Run Immediately</b> (bukan "Run After Confirmation") dan matikan <b>Notify When Run</b>. Ketuk Next.</li>
+          <li>Pilih <b>New Blank Automation</b> → tambah aksi <b>Open URLs</b> → tempel link aplikasi di atas → Done.</li>
+          <li>Uji: ubah sementara jam otomasi ke 2 menit dari sekarang, kunci HP, tunggu. Kuis harus terbuka sendiri. Kembalikan ke 06:00.</li>
+        </ol>
+        <p class="note">Agar pasti bangun: pasang juga alarm Clock jam 06:00. Otomasi ini membuka kuis tepat saat alarm berbunyi.</p>
+      </section>
+
       <section class="panel">
-        <h2>1. Buat shortcut "Gerbang Prep"</h2>
+        <h2>2. Buat shortcut "Gerbang Prep"</h2>
         <ol class="steps">
           <li>Buka app <b>Shortcuts</b> → tab Shortcuts → <b>+</b>. Beri nama <code>Gerbang Prep</code>.</li>
           <li>Tambah aksi <b>Get File</b> (Dapatkan File): folder <code>Shortcuts</code>, path <code>PrepMaster/selesai.txt</code>. Matikan <b>Error If Not Found</b>.</li>
@@ -267,15 +305,6 @@ tr:last-child td { border-bottom: 0; }
             <br>– <b>Otherwise</b>: <b>Open URLs</b> dengan link aplikasi di atas.</li>
         </ol>
         <p class="note">Kode hari ini: <b class="mono" id="codetoday"></b>. Rumusnya sama dengan di Shortcuts: (tanggal yyyyMMdd × 37 + 4242) mod 9973. Pakai untuk menguji shortcut setelah dibuat.</p>
-      </section>
-
-      <section class="panel">
-        <h2>2. Otomasi jam 06:00</h2>
-        <ol class="steps">
-          <li>Shortcuts → tab <b>Automation</b> → <b>+</b> → <b>Time of Day</b>: 06:00, <b>Daily</b>.</li>
-          <li>Pilih <b>Run Immediately</b> dan matikan <b>Notify When Run</b>.</li>
-          <li>Aksi: <b>Open URLs</b> → link aplikasi. Kuis langsung terbuka begitu alarm pagi Anda berbunyi.</li>
-        </ol>
       </section>
 
       <section class="panel">

@@ -10,7 +10,7 @@ index.html          tampilan (4 tab: Hari ini, Progres, Roadmap, Setup)
 js/bank-ielts.js    88 soal IELTS: 8 passage Reading (32), Vocabulary (24), Grammar (20), Writing (12)
 js/bank-gmat.js     62 soal GMAT: Data Sufficiency (20), Critical Reasoning (24), Reading Comp (6 passage, 18)
 js/generators.js    16 generator soal Quant (angka baru setiap hari, pembahasan otomatis)
-js/roadmap.js       target skor, sekolah target, Jalur Utama (2028) & Jalur Cepat (2027), aturan LoA per beasiswa
+js/roadmap.js       target skor, sekolah target, 3 jalur intake (Agu 2027 / Jan 2028 / Agu 2028) + gerbang skor, aturan LoA per beasiswa
 js/config.js        link aplikasi (dipakai di instruksi Shortcuts)
 js/app.js           penyusun soal harian, penilaian, spaced repetition, penyimpanan, tampilan
 ```
@@ -19,7 +19,7 @@ js/app.js           penyusun soal harian, penilaian, spaced repetition, penyimpa
 Satu soal (`Question`): `id, exam, section, type, difficulty (1-3), passage?, prompt, choices[], answer, explanation, tip?`.
 
 State pengguna (satu dokumen, disinkronkan ke akun lewat db artifact, cadangan di localStorage):
-`{ track, checklist{taskId}, seen{qid: tanggal}, srs{qid: {box, due, q?}}, days{tanggal: {items[10], review[], answers{qid: {c, ok, t}}, done, sum}} }`
+`{ track, trackMode, scores[{kind,total,date}], checklist{taskId}, seen{qid: tanggal}, srs{qid: {box, due, q?}}, days{tanggal: {items[10], review[], answers{qid: {c, ok, t}}, done, sum}} }`
 
 ## Aturan harian
 - Komposisi awal: IELTS = 2 Reading (satu passage) + Vocabulary + Grammar + Writing; GMAT = 2 Quant + DS + CR + RC.
@@ -27,6 +27,9 @@ State pengguna (satu dokumen, disinkronkan ke akun lewat db artifact, cadangan d
 - Soal GMAT tingkat 2–3 diprioritaskan (target 695).
 - Soal salah diulang setelah 1, 3, 7, lalu 16 hari (maks. 2 ulangan per ujian per hari).
 - Kode buka harian = `(yyyyMMdd × 37 + 4242) mod 9973`, rumus yang sama dipakai shortcut "Gerbang Prep".
+
+## Rekomendasi intake
+`state.scores` berisi skor latihan dan skor resmi. Setiap jalur punya gerbang `{test, min, by}` di `ROADMAP.RULES`. Statusnya: tercapai (skor resmi ≥ min), di jalur (kenaikan per minggu yang dibutuhkan ≤ `ASSUMPTIONS`), berat, perlu skor, atau tertutup (tenggat lewat). Rekomendasi = jalur tercepat yang tercapai atau di jalur.
 
 ## Menambah soal
 Tambahkan objek ke `js/bank-ielts.js` atau `js/bank-gmat.js` dengan `id` unik. Soal baru otomatis diprioritaskan karena belum pernah muncul.

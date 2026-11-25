@@ -6,7 +6,10 @@
  * {
  *   v: 1,
  *   updatedAt: epoch ms,
- *   track: "P" | "S",                     // jalur roadmap: Utama 2028 / Cepat 2027
+ *   track: "S" | "J" | "P",               // jalur pilihan manual: Kilat 2027 / Jan 2028 / Agu 2028
+ *   trackMode: "auto" | "manual",         // auto = ikuti rekomendasi dari skor
+ *   scores: [{ id, kind: "gmat-practice"|"gmat-official"|"ielts-mock"|"ielts-official",
+ *              total: number, date: "YYYY-MM-DD" }],
  *   checklist: { [taskId]: true },        // centang tugas roadmap
  *   seen: { [questionId]: "YYYY-MM-DD" }, // terakhir kali soal muncul
  *   srs: { [questionId]: { box: 0..3, due: "YYYY-MM-DD", q?: Question } },
@@ -66,7 +69,7 @@
   }
 
   // ---------- state ----------
-  function emptyState() { return { v: 1, updatedAt: 0, track: "P", checklist: {}, seen: {}, srs: {}, days: {} }; }
+  function emptyState() { return { v: 1, updatedAt: 0, track: "P", trackMode: "auto", scores: [], checklist: {}, seen: {}, srs: {}, days: {} }; }
   function loadLocal() { try { const s = localStorage.getItem(STORE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
   function normalize(s) { const e = emptyState(); s = s && typeof s === "object" ? s : {}; Object.keys(e).forEach(function (k) { if (s[k] == null) s[k] = e[k]; }); return s; }
   let state = normalize(loadLocal());
@@ -491,21 +494,139 @@
       '<div class="goal"><p class="klabel">GMAT Focus</p><p class="kval">' + g.gmat.target + '</p><p class="ksub">batas bawah ' + g.gmat.minimum + "</p><p class=\"small\">" + esc(g.gmat.note) + "</p></div></div>"));
   }
 
+  // ---------- mesin rekomendasi intake ----------
+  const SCORE_KINDS = {
+    "gmat-practice": "GMAT Official Practice Exam", "gmat-official": "GMAT Focus resmi",
+    "ielts-mock": "IELTS mock", "ielts-official": "IELTS resmi"
+  };
+  const TRACK_SHORT = { S: "Kilat · Agu/Sep 2027", J: "Januari 2028", P: "Agu/Sep 2028" };
+  const STATUS = {
+    done: ["Siap", "good"], ontrack: ["Di jalur", "good"], hard: ["Berat", "warn"],
+    unknown: ["Perlu skor", "muted"], missed: ["Tertutup", "bad"]
+  };
+  function fmtScore(test, v) { return test === "ielts" ? Number(v).toFixed(1) : String(Math.round(v)); }
+  function scoreFacts(test) {
+    const list = (state.scores || []).filter(function (x) { return x.kind.indexOf(test) === 0 && x.date <= today; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    const off = list.filter(function (x) { return /official$/.test(x.kind); });
+    return {
+      bestOff: off.length ? Math.max.apply(null, off.map(function (x) { return x.total; })) : null,
+      latest: list.length ? list[list.length - 1].total : null
+    };
+  }
+  function evalGate(g) {
+    const A = RM.ASSUMPTIONS, f = scoreFacts(g.test), name = g.test === "gmat" ? "GMAT" : "IELTS";
+    const need = name + " resmi " + fmtScore(g.test, g.min) + "+ sebelum " + fmtShort(g.by) + " " + parseKey(g.by).getFullYear();
+    if (f.bestOff != null && f.bestOff >= g.min) return { st: "done", need: need, text: "Tercapai (" + fmtScore(g.test, f.bestOff) + ")." };
+    const daysLeft = daysBetween(today, g.by);
+    if (daysLeft < 0) return { st: "missed", need: need, text: "Tenggat sudah lewat." };
+    const base = Math.max(f.bestOff == null ? -1 : f.bestOff, f.latest == null ? -1 : f.latest);
+    if (base < 0) return { st: "unknown", need: need, text: "Belum ada skor " + name + ". Kerjakan tes latihan lalu catat di bawah." };
+    const weeks = Math.max(0, daysLeft / 7 - A.bufferWeeks);
+    const gap = g.min - base;
+    if (gap <= 0) return { st: "ontrack", need: need, text: "Skor latihan " + fmtScore(g.test, base) + " sudah cukup. Ambil tes resmi " + g.why + "." };
+    const rate = g.test === "gmat" ? A.gmatPointsPerWeek : A.ieltsBandPerWeek;
+    const perWeek = weeks > 0 ? gap / weeks : Infinity;
+    const gapTxt = g.test === "gmat" ? Math.round(gap) + " poin" : gap.toFixed(1) + " band";
+    const perTxt = !isFinite(perWeek) ? "tidak ada waktu tersisa" : "butuh ±" + (g.test === "gmat" ? perWeek.toFixed(1) + " poin" : perWeek.toFixed(2) + " band") + "/minggu selama " + Math.floor(weeks) + " minggu";
+    if (perWeek <= rate) return { st: "ontrack", need: need, text: "Kurang " + gapTxt + " dari skor terakhir " + fmtScore(g.test, base) + "; " + perTxt + "." };
+    return { st: "hard", need: need, text: "Kurang " + gapTxt + "; " + perTxt + " (laju realistis ±" + (g.test === "gmat" ? rate + " poin" : rate + " band") + ")." };
+  }
+  function evalTrack(id) {
+    const gates = RM.RULES[id].map(evalGate);
+    const sts = gates.map(function (g) { return g.st; });
+    let st = "ontrack";
+    if (sts.indexOf("missed") >= 0) st = "missed";
+    else if (sts.every(function (x) { return x === "done"; })) st = "done";
+    else if (sts.indexOf("unknown") >= 0) st = "unknown";
+    else if (sts.indexOf("hard") >= 0) st = "hard";
+    return { id: id, st: st, gates: gates };
+  }
+  function recommendation() {
+    const all = RM.TRACK_ORDER.map(evalTrack);
+    const pick = all.find(function (t) { return t.st === "done" || t.st === "ontrack"; });
+    const id = pick ? pick.id : "P";
+    let why;
+    if (pick) why = pick.id === "P" ? "Jalur tercepat yang masih realistis dengan skor Anda saat ini." : "Skor Anda cukup cepat naik untuk mengejar intake ini.";
+    else if (all.every(function (t) { return t.st === "unknown" || t.st === "missed"; })) why = "Belum ada skor. Catat hasil GMAT Official Practice Exam 1 dan mock IELTS agar rekomendasi dihitung dari kemampuan Anda.";
+    else why = "Semua jalur butuh kenaikan di atas laju biasa. Agustus 2028 tetap dipilih karena masih ada Round 2 (±Januari 2028) sebagai cadangan.";
+    return { id: id, why: why, all: all };
+  }
+  function activeTrackId() { return state.trackMode === "manual" && RM.RULES[state.track] ? state.track : recommendation().id; }
+
+  function renderPlanner(root) {
+    const rec = recommendation();
+    const sec = el("section", "panel planner");
+    let html = "<h2>Kapan bisa mulai kuliah?</h2><p class=\"muted small\">Dihitung ulang setiap kali Anda mencatat skor. Rekomendasi = intake paling cepat yang masih terkejar.</p><div class=\"opts\">";
+    rec.all.forEach(function (t) {
+      const s = STATUS[t.st];
+      html += '<div class="opt' + (t.id === rec.id ? " rec" : "") + (t.id === activeTrackId() ? " active" : "") + '"><div class="opthead"><b>' + esc(TRACK_SHORT[t.id]) + '</b><span class="chip st-' + s[1] + '">' + s[0] + "</span>" + (t.id === rec.id ? '<span class="chip recc">Rekomendasi</span>' : "") + "</div><ul>";
+      t.gates.forEach(function (g) { html += '<li class="g-' + STATUS[g.st][1] + '"><span>' + esc(g.need) + "</span><small>" + esc(g.text) + "</small></li>"; });
+      html += "</ul></div>";
+    });
+    html += '</div><p class="recwhy"><b>Rekomendasi: ' + esc(TRACK_SHORT[rec.id]) + ".</b> " + esc(rec.why) + '</p><p class="muted small">' + esc(RM.ASSUMPTIONS.note) + "</p>";
+    sec.innerHTML = html;
+    root.appendChild(sec);
+
+    // form skor
+    const form = el("form", "panel scoreform");
+    form.innerHTML = "<h2>Catat skor</h2>" +
+      '<div class="frow"><label for="sc-kind">Jenis</label><select id="sc-kind">' + Object.keys(SCORE_KINDS).map(function (k) { return '<option value="' + k + '">' + esc(SCORE_KINDS[k]) + "</option>"; }).join("") + "</select></div>" +
+      '<div class="frow"><label for="sc-total">Skor total</label><input id="sc-total" type="number" inputmode="decimal" required></div>' +
+      '<div class="frow"><label for="sc-date">Tanggal</label><input id="sc-date" type="date" required value="' + today + '" max="' + today + '"></div>' +
+      '<p class="ferr" id="sc-err" hidden></p><button type="submit" class="primary">Simpan skor</button>';
+    const kindSel = $("#sc-kind", form), totalIn = $("#sc-total", form);
+    function syncRange() { const g = kindSel.value.indexOf("gmat") === 0; totalIn.min = g ? 205 : 0; totalIn.max = g ? 805 : 9; totalIn.step = g ? 10 : 0.5; totalIn.placeholder = g ? "mis. 585" : "mis. 6.5"; }
+    kindSel.addEventListener("change", syncRange); syncRange();
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      const kind = kindSel.value, v = Number(totalIn.value), d = $("#sc-date", form).value, err = $("#sc-err", form);
+      const g = kind.indexOf("gmat") === 0;
+      const ok = g ? (v >= 205 && v <= 805 && Math.round(v) % 10 === 5) : (v >= 0 && v <= 9 && (v * 2) % 1 === 0);
+      if (!ok || !d) { err.hidden = false; err.textContent = g ? "Skor GMAT Focus antara 205 dan 805, berakhiran 5 (mis. 605, 645)." : "Skor IELTS antara 0 dan 9, kelipatan 0.5 (mis. 6.5)."; return; }
+      state.scores = (state.scores || []).concat([{ id: "s" + Date.now().toString(36), kind: kind, total: v, date: d > today ? today : d }]);
+      save(); renderRoadmap();
+    });
+    root.appendChild(form);
+
+    const sc = (state.scores || []).slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    if (sc.length) {
+      const ul = el("ul", "scorelist");
+      sc.forEach(function (x) {
+        const li = el("li", null, '<span class="mono">' + esc(fmtShort(x.date)) + "</span><span>" + esc(SCORE_KINDS[x.kind] || x.kind) + '</span><b class="mono">' + esc(fmtScore(x.kind.indexOf("gmat") === 0 ? "gmat" : "ielts", x.total)) + "</b>");
+        const del = el("button", "ghost sm", "Hapus"); del.type = "button";
+        del.addEventListener("click", function () { state.scores = state.scores.filter(function (y) { return y.id !== x.id; }); save(); renderRoadmap(); });
+        li.appendChild(del); ul.appendChild(li);
+      });
+      form.appendChild(ul);
+    }
+  }
+
   // ---------- UI: roadmap ----------
   const CAT = { test: "Tes", scholarship: "Beasiswa", admission: "Kampus", loa: "LoA", prep: "Persiapan", visa: "Visa" };
   function renderRoadmap() {
     const root = $("#view-roadmap"); root.innerHTML = "";
-    const track = RM.TRACKS.find(function (t) { return t.id === state.track; }) || RM.TRACKS[0];
+    const activeId = activeTrackId();
+    const track = RM.TRACKS.find(function (t) { return t.id === activeId; }) || RM.TRACKS[RM.TRACKS.length - 1];
     root.appendChild(el("section", "pagehead", '<p class="eyebrow">Roadmap S2 · MBA</p><h1>Dari hari ini sampai hari pertama kuliah</h1>'));
+    renderPlanner(root);
 
     const tog = el("div", "toggle"); tog.setAttribute("role", "tablist");
     RM.TRACKS.forEach(function (t) {
-      const b = el("button", t.id === track.id ? "on" : "", esc(t.id === "P" ? "Utama · 2028" : "Cepat · 2027"));
+      const b = el("button", t.id === track.id ? "on" : "", esc(TRACK_SHORT[t.id]));
       b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(t.id === track.id)); b.id = "track-" + t.id;
-      b.addEventListener("click", function () { state.track = t.id; save(); renderRoadmap(); });
+      b.addEventListener("click", function () { state.track = t.id; state.trackMode = "manual"; save(); renderRoadmap(); });
       tog.appendChild(b);
     });
+    const modeRow = el("div", "moderow");
+    if (state.trackMode === "manual") {
+      modeRow.innerHTML = '<span class="muted small">Dipilih manual.</span>';
+      const back = el("button", "ghost sm", "Ikuti rekomendasi otomatis"); back.type = "button";
+      back.addEventListener("click", function () { state.trackMode = "auto"; save(); renderRoadmap(); });
+      modeRow.appendChild(back);
+    } else modeRow.innerHTML = '<span class="muted small">Mengikuti rekomendasi. Ketuk jalur lain untuk melihat atau memilih manual.</span>';
     root.appendChild(tog);
+    root.appendChild(modeRow);
 
     const allTasks = track.milestones.reduce(function (m, s) { return m.concat(s.tasks); }, []);
     const doneTasks = allTasks.filter(function (t) { return state.checklist[t.id]; }).length;
@@ -602,5 +723,5 @@
   initCloud();
 
   // dipakai untuk pengujian lokal
-  window.__prep = { buildDay: buildDay, unlockCode: unlockCode, getState: function () { return state; } };
+  window.__prep = { recommendation: recommendation, buildDay: buildDay, unlockCode: unlockCode, getState: function () { return state; } };
 })();
