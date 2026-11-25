@@ -1,0 +1,317 @@
+<meta charset="utf-8">
+<title>Prep Master S2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: satu kolom sempit seperti app HP, tab bar tetap di bawah; sesi pagi = kartu soal tunggal dengan bar 10 segmen. */
+:root {
+  --bg: #F2F3F8;
+  --surface: #FFFFFF;
+  --sunk: #E8EAF2;
+  --ink: #161A2E;
+  --muted: #5C6380;
+  --line: #D9DCE8;
+  --dawn: #C7621A;       /* aksen utama: matahari jam 06:00 */
+  --dawn-soft: #FBE9DA;
+  --ielts: #0E7A6A;
+  --ielts-soft: #DDF1EC;
+  --gmat: #3646A8;
+  --gmat-soft: #E2E6FA;
+  --good: #1D8148;
+  --good-soft: #DDF3E5;
+  --bad: #BE3A2E;
+  --bad-soft: #FBE3E0;
+  --warn: #A86A00;
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1020; --surface: #161A2D; --sunk: #1F2440; --ink: #E9EBF5; --muted: #9CA3BF; --line: #2A3050;
+    --dawn: #F29A4A; --dawn-soft: #3A2514; --ielts: #4CC9B5; --ielts-soft: #12302C; --gmat: #93A3FF; --gmat-soft: #1D2350;
+    --good: #57C987; --good-soft: #143222; --bad: #F2786C; --bad-soft: #3A1A18; --warn: #E3A73A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1020; --surface: #161A2D; --sunk: #1F2440; --ink: #E9EBF5; --muted: #9CA3BF; --line: #2A3050;
+  --dawn: #F29A4A; --dawn-soft: #3A2514; --ielts: #4CC9B5; --ielts-soft: #12302C; --gmat: #93A3FF; --gmat-soft: #1D2350;
+  --good: #57C987; --good-soft: #143222; --bad: #F2786C; --bad-soft: #3A1A18; --warn: #E3A73A;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 calc(96px + env(safe-area-inset-bottom, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.55rem, 5.4vw, 2.1rem); line-height: 1.12; font-weight: 700; }
+h2 { font-size: 1.12rem; font-weight: 700; }
+h3 { font-size: 1.02rem; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font: 600 0.72rem/1.2 var(--f-body); text-transform: uppercase; letter-spacing: 0.09em; color: var(--dawn); }
+.muted { color: var(--muted); }
+.small { font-size: 0.84rem; }
+.center { text-align: center; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--dawn); outline-offset: 2px; }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 14px 6px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 8px; }
+.brand b { font: 700 1.15rem/1 var(--f-display); }
+.brand .sun { width: 12px; height: 12px; border-radius: 50%; background: var(--dawn); box-shadow: 0 0 0 4px var(--dawn-soft); align-self: center; }
+.hinfo { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 0.8rem; color: var(--muted); }
+.pill { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--surface); white-space: nowrap; }
+.pill.streak { color: var(--dawn); border-color: var(--dawn-soft); font-weight: 600; }
+#sync[data-state="ok"] { color: var(--good); }
+#sync[data-state="warn"] { color: var(--warn); }
+
+/* views */
+main section + section, main > * + * { margin-top: 16px; }
+.today-head, .pagehead { padding-top: 10px; display: grid; gap: 8px; }
+.lede { color: var(--muted); max-width: 56ch; }
+
+.segbar { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.seg { width: 100%; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; position: relative; display: grid; place-items: center; }
+.seg.ielts { border-bottom: 3px solid var(--ielts); }
+.seg.gmat { border-bottom: 3px solid var(--gmat); }
+.seg.ok { background: var(--good-soft); border-color: var(--good); }
+.seg.bad { background: var(--bad-soft); border-color: var(--bad); }
+.seg.cur { outline: 2px solid var(--dawn); outline-offset: 1px; }
+.segn { font: 600 0.78rem/1 var(--f-mono); color: var(--muted); }
+.seg.ok .segn { color: var(--good); } .seg.bad .segn { color: var(--bad); }
+.seglegend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.75rem; color: var(--muted); margin-top: 8px !important; }
+.seglegend span { display: inline-flex; align-items: center; gap: 5px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.sw.ielts { background: var(--ielts); } .sw.gmat { background: var(--gmat); } .sw.okc { background: var(--good); } .sw.badc { background: var(--bad); }
+
+.qcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.qcard.ielts { border-top: 4px solid var(--ielts); }
+.qcard.gmat { border-top: 4px solid var(--gmat); }
+.qmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.78rem; color: var(--muted); }
+.qmeta .exam { font: 700 0.72rem/1 var(--f-mono); letter-spacing: 0.06em; padding: 4px 7px; border-radius: 6px; }
+.ielts .qmeta .exam { background: var(--ielts-soft); color: var(--ielts); }
+.gmat .qmeta .exam { background: var(--gmat-soft); color: var(--gmat); }
+.qmeta .qnum { margin-left: auto; font-family: var(--f-mono); }
+.diff { display: inline-flex; gap: 3px; }
+.diff .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line); display: inline-block; }
+.diff .dot.on { background: var(--dawn); }
+.chip { font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--sunk); color: var(--muted); white-space: nowrap; }
+.chip.review { background: var(--dawn-soft); color: var(--dawn); }
+
+.passage { background: var(--sunk); border-radius: 10px; padding: 10px 12px; }
+.passage summary { cursor: pointer; font-weight: 600; font-size: 0.88rem; }
+.ptext { margin-top: 10px; font-size: 0.93rem; line-height: 1.65; max-height: 52vh; overflow-y: auto; }
+.ptext p + p { margin-top: 10px; }
+.prompt { font-size: 1.02rem; line-height: 1.6; min-width: 0; overflow-wrap: anywhere; }
+.choices { display: grid; gap: 8px; }
+.choice { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; text-align: left; padding: 11px 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); cursor: pointer; transition: border-color .12s, background .12s; }
+.choice:hover:not(:disabled) { border-color: var(--dawn); }
+.choice:disabled { cursor: default; opacity: 0.75; }
+.choice.correct { border-color: var(--good); background: var(--good-soft); opacity: 1; }
+.choice.wrong { border-color: var(--bad); background: var(--bad-soft); opacity: 1; }
+.letter { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font: 700 0.8rem/1 var(--f-mono); background: var(--sunk); }
+.correct .letter { background: var(--good); color: var(--surface); }
+.wrong .letter { background: var(--bad); color: var(--surface); }
+.ctext { padding-top: 3px; min-width: 0; overflow-wrap: anywhere; }
+.feedback { padding: 10px 12px; border-radius: 10px; font-size: 0.92rem; }
+.feedback.ok { background: var(--good-soft); color: var(--good); }
+.feedback.bad { background: var(--bad-soft); color: var(--bad); }
+.explain { border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
+.explain summary { cursor: pointer; font-weight: 600; color: var(--dawn); }
+.exbody { margin-top: 8px; font-size: 0.93rem; line-height: 1.65; display: grid; gap: 8px; }
+.tip { background: var(--dawn-soft); padding: 8px 10px; border-radius: 8px; }
+.qnav { display: flex; justify-content: flex-end; }
+.primary { background: var(--dawn); color: #fff; border: 0; border-radius: 11px; padding: 12px 18px; font-weight: 600; cursor: pointer; }
+.ghost { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 500; }
+
+.donecard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 14px; }
+.score { display: flex; align-items: baseline; gap: 8px; }
+.score .big { font: 700 3.4rem/1 var(--f-display); }
+.score .of { font: 500 1.3rem/1 var(--f-display); color: var(--muted); }
+.score .pct { margin-left: auto; font: 700 1rem/1 var(--f-mono); color: var(--dawn); }
+.code { background: var(--dawn-soft); border-radius: 12px; padding: 14px; display: grid; gap: 6px; justify-items: start; }
+.codeval { font: 700 2.4rem/1.1 var(--f-mono); letter-spacing: 0.12em; user-select: all; }
+.sect { margin-top: 22px !important; }
+.reviewlist { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+.rv details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.rv.ok details { border-left: 4px solid var(--good); }
+.rv.bad details { border-left: 4px solid var(--bad); }
+.rv summary { cursor: pointer; display: grid; grid-template-columns: 20px 1fr; gap: 2px 8px; align-items: baseline; }
+.rv .mark { grid-row: span 2; font-weight: 700; }
+.rv.ok .mark { color: var(--good); } .rv.bad .mark { color: var(--bad); }
+.rvmeta { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+.rvq { font-size: 0.9rem; min-width: 0; overflow-wrap: anywhere; }
+.rvbody { margin-top: 12px; display: grid; gap: 12px; }
+.rvchoices { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: 0.9rem; }
+.rvchoices li { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; padding: 6px 8px; border-radius: 8px; }
+.rvchoices li.correct { background: var(--good-soft); }
+.rvchoices li.wrong { background: var(--bad-soft); }
+.rvchoices .letter { width: 24px; height: 24px; font-size: 0.72rem; }
+.you { font-size: 0.7rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+
+/* progres */
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.kpis.three { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 14px; }
+@media (max-width: 460px) { .kpis.three { grid-template-columns: 1fr; } }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.trackhead .kpi { background: var(--bg); }
+.klabel { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; }
+.kval { font: 700 1.6rem/1.15 var(--f-display); margin-top: 4px !important; font-variant-numeric: tabular-nums; }
+.kval.sm { font-size: 1rem; line-height: 1.3; }
+.ksub { font-size: 0.78rem; color: var(--muted); margin-top: 2px !important; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .target { stroke: var(--dawn); stroke-dasharray: 4 4; stroke-width: 1.2; }
+.chart .axis { fill: var(--muted); font: 9px var(--f-mono); }
+.chart .tlabel { fill: var(--dawn); }
+.chart .bar { fill: var(--gmat); }
+.chart .bar.now { fill: var(--dawn); }
+.chart .empty { fill: var(--line); }
+.skills { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.skills li { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr) 44px; grid-template-rows: auto auto; gap: 2px 10px; align-items: center; font-size: 0.86rem; }
+.sname { min-width: 0; }
+.scount { grid-column: 1; font-size: 0.72rem; color: var(--muted); }
+.track { height: 8px; border-radius: 99px; background: var(--sunk); overflow: hidden; grid-row: 1; grid-column: 2; }
+.fill { display: block; height: 100%; border-radius: 99px; background: var(--muted); }
+.fill.good { background: var(--good); } .fill.mid { background: var(--warn); } .fill.low { background: var(--bad); }
+.sval { font: 600 0.82rem var(--f-mono); text-align: right; grid-row: 1; grid-column: 3; }
+.goalgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.goal { background: var(--bg); border-radius: 12px; padding: 12px; display: grid; gap: 4px; }
+
+/* roadmap */
+.toggle { display: inline-flex; background: var(--sunk); border-radius: 12px; padding: 4px; gap: 4px; }
+.toggle button { border: 0; background: transparent; padding: 8px 14px; border-radius: 9px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.toggle button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.timeline { list-style: none; margin: 16px 0 0; padding: 0 0 0 18px; border-left: 2px solid var(--line); display: grid; gap: 14px; }
+.ms { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+.ms::before { content: ""; position: absolute; left: -26px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--muted); }
+.ms.now::before { background: var(--dawn); border-color: var(--dawn); box-shadow: 0 0 0 4px var(--dawn-soft); }
+.ms.past { opacity: 0.6; }
+.ms.past::before { background: var(--muted); }
+.msdate { font: 600 0.75rem/1 var(--f-mono); color: var(--muted); }
+.mstitle { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.mstitle h3 { flex-basis: 100%; }
+.chip.cat { background: var(--gmat-soft); color: var(--gmat); }
+.cat-test .chip.cat { background: var(--ielts-soft); color: var(--ielts); }
+.cat-loa .chip.cat, .cat-scholarship .chip.cat { background: var(--dawn-soft); color: var(--dawn); }
+.chip.est { border: 1px dashed var(--muted); background: transparent; }
+.chip.nowc { background: var(--dawn); color: #fff; }
+.ms > p { font-size: 0.9rem; color: var(--muted); }
+.tasks { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.tasks li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; font-size: 0.9rem; }
+.tasks input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--dawn); }
+.tasks input:checked + label { text-decoration: line-through; color: var(--muted); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; min-width: 640px; font-size: 0.84rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--sunk); font-weight: 600; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+.weekly { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.weekly li { display: grid; gap: 2px; font-size: 0.9rem; }
+.weekly span { color: var(--muted); }
+
+/* setup */
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 0.92rem; }
+.steps code, .mono { font-family: var(--f-mono); font-size: 0.85em; background: var(--sunk); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+.urlbox { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.urlbox .mono { padding: 8px 10px; flex: 1 1 220px; min-width: 0; }
+.note { background: var(--dawn-soft); border-radius: 10px; padding: 10px 12px; font-size: 0.88rem; }
+
+/* tab bar */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+.tabs nav { max-width: 680px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.tabs a { display: grid; justify-items: center; gap: 2px; padding: 9px 4px 10px; text-decoration: none; color: var(--muted); font-size: 0.72rem; font-weight: 600; }
+.tabs a svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tabs a[aria-current="page"] { color: var(--dawn); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="sun" aria-hidden="true"></span><b>Prep Master</b></div>
+    <div class="hinfo"><span id="hdate"></span><span class="pill streak">Streak <span id="hstreak">0 hari</span></span><span class="pill" id="sync">Menyambung…</span></div>
+  </header>
+
+  <main>
+    <div id="view-today"></div>
+    <div id="view-progress" hidden></div>
+    <div id="view-roadmap" hidden></div>
+    <div id="view-setup" hidden>
+      <section class="pagehead"><p class="eyebrow">Setup iPhone</p><h1>Kunci HP sampai kuis pagi selesai</h1>
+        <p class="lede">Gratis, memakai app Shortcuts bawaan iPhone. Setiap jam 06:00 kuis terbuka otomatis. Saat Anda membuka app pengalih perhatian (Instagram, TikTok, YouTube, dll.) sebelum kuis selesai, iPhone meminta kode buka. Kode hanya muncul setelah 10 soal terjawab.</p></section>
+
+      <section class="panel">
+        <h2>Link aplikasi</h2>
+        <div class="urlbox"><span class="mono" id="appurl"></span><button type="button" class="ghost" id="copyurl">Salin link</button></div>
+        <p class="muted small">Buka link ini di Safari dan login ke claude.ai sekali. Progres tersimpan di akun Anda, jadi sama di Safari maupun app Claude.</p>
+      </section>
+
+      <section class="panel">
+        <h2>1. Buat shortcut "Gerbang Prep"</h2>
+        <ol class="steps">
+          <li>Buka app <b>Shortcuts</b> → tab Shortcuts → <b>+</b>. Beri nama <code>Gerbang Prep</code>.</li>
+          <li>Tambah aksi <b>Get File</b> (Dapatkan File): folder <code>Shortcuts</code>, path <code>PrepMaster/selesai.txt</code>. Matikan <b>Error If Not Found</b>.</li>
+          <li>Tambah <b>Get Text from Input</b> dengan input <i>File</i>.</li>
+          <li>Tambah <b>Format Date</b>: tanggal <i>Current Date</i>, Date Format <b>Custom</b> = <code>yyyyMMdd</code>, Time Format <b>None</b>.</li>
+          <li>Tambah <b>If</b>: <i>Text</i> <b>is</b> <i>Formatted Date</i> → di dalamnya <b>Stop This Shortcut</b>. (Artinya: sudah buka hari ini, biarkan lewat.)</li>
+          <li>Di bawah blok If (setelah End If), tambah tiga <b>Calculate</b> berurutan:<br><i>Formatted Date</i> × <code>37</code> → hasil + <code>4242</code> → hasil <b>Modulus</b> <code>9973</code>.</li>
+          <li>Tambah <b>Ask for Input</b>: tipe <b>Number</b>, pertanyaan <code>Kode buka dari Prep Master?</code></li>
+          <li>Tambah <b>If</b>: <i>Provided Input</i> <b>is</b> <i>Calculation Result</i> (hasil Modulus):
+            <br>– <b>Then</b>: <b>Save File</b> berisi <i>Formatted Date</i> ke <code>Shortcuts/PrepMaster/selesai.txt</code> dengan <b>Overwrite</b> menyala, lalu <b>Show Notification</b> <code>Terbuka. Semangat!</code>
+            <br>– <b>Otherwise</b>: <b>Open URLs</b> dengan link aplikasi di atas.</li>
+        </ol>
+        <p class="note">Kode hari ini: <b class="mono" id="codetoday"></b>. Rumusnya sama dengan di Shortcuts: (tanggal yyyyMMdd × 37 + 4242) mod 9973. Pakai untuk menguji shortcut setelah dibuat.</p>
+      </section>
+
+      <section class="panel">
+        <h2>2. Otomasi jam 06:00</h2>
+        <ol class="steps">
+          <li>Shortcuts → tab <b>Automation</b> → <b>+</b> → <b>Time of Day</b>: 06:00, <b>Daily</b>.</li>
+          <li>Pilih <b>Run Immediately</b> dan matikan <b>Notify When Run</b>.</li>
+          <li>Aksi: <b>Open URLs</b> → link aplikasi. Kuis langsung terbuka begitu alarm pagi Anda berbunyi.</li>
+        </ol>
+      </section>
+
+      <section class="panel">
+        <h2>3. Gerbang saat membuka app lain</h2>
+        <ol class="steps">
+          <li>Automation → <b>+</b> → <b>App</b> → pilih app yang ingin dikunci (Instagram, TikTok, YouTube, X, WhatsApp, game). Centang <b>Is Opened</b>.</li>
+          <li><b>Run Immediately</b>, aksi: <b>Run Shortcut</b> → <code>Gerbang Prep</code>.</li>
+          <li>Hasilnya: sebelum kuis selesai, setiap kali app itu dibuka Anda diminta kode; jika salah atau dibatalkan, iPhone langsung membuka kuis.</li>
+        </ol>
+      </section>
+
+      <section class="panel">
+        <h2>4. Opsional: kunci lebih ketat dengan Screen Time</h2>
+        <ol class="steps">
+          <li>Settings → Screen Time → <b>Downtime</b>: Scheduled 06:00–06:45, <b>Block at Downtime</b> menyala.</li>
+          <li><b>Always Allowed</b>: Phone, Messages, Safari, Claude, Shortcuts.</li>
+          <li>Minta orang lain mengetikkan <b>Screen Time Passcode</b> supaya Anda tidak bisa mematikannya sendiri.</li>
+        </ol>
+        <p class="muted small">Catatan jujur: tanpa app native, kunci ini bisa diakali dengan menghapus otomasi. Fungsinya sebagai pengingat disiplin yang kuat, bukan kunci mutlak.</p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="tabs">
+  <nav aria-label="Navigasi utama">
+    <a href="#today" id="tab-today"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="14" r="4"/><path d="M12 3v3M4.5 7.5l2 2M19.5 7.5l-2 2M2 18h20M6 21h12"/></svg>Hari ini</a>
+    <a href="#progress" id="tab-progress"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Progres</a>
+    <a href="#roadmap" id="tab-roadmap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Roadmap</a>
+    <a href="#setup" id="tab-setup"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Setup</a>
+  </nav>
+</div>
+
+<script src="js/bank-ielts.js"></script>
+<script src="js/bank-gmat.js"></script>
+<script src="js/generators.js"></script>
+<script src="js/roadmap.js"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
