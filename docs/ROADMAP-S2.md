@@ -1,47 +1,45 @@
 # Roadmap Persiapan S2 (MBA): versi 25 November 2026
 
-Target: MBA di UK/EU (cadangan: US), didanai LPDP / Chevening / beasiswa lain.
+**Profil:** pengalaman kerja 3,5 tahun (±4,5 tahun saat masuk 2028) · target MBA AS (M7) atau universitas QS top 10 · belum pernah GMAT/IELTS.
 Tanggal bertanda **(perkiraan)** disusun dari pola tahun-tahun sebelumnya. Cek situs resmi sebelum menjadwalkan.
 
 ## Target
 | Ukuran | Target | Batas bawah |
 |---|---|---|
-| IELTS Academic | 7.5 overall | tiap band ≥ 7.0 (LPDP min. 6.5) |
-| GMAT Focus | 655 | 615 |
-| Kuis pagi (rata-rata 7 hari) | ≥ 80% benar | sebelum ujian resmi |
+| GMAT Focus | **695** (±persentil 98) | 665 |
+| IELTS Academic | **7.5** overall | tiap band ≥ 7.0 |
+| Kuis pagi (rata-rata 7 hari) | ≥ 85% benar | sebelum ujian resmi |
 
-## Jalur A: intake September 2027 (agresif)
+## Sekolah target
+- **Reach:** Harvard Business School, Stanford GSB
+- **Target:** Wharton, Chicago Booth, Kellogg, Columbia, MIT Sloan
+- **Cadangan kuat (QS top 10):** Oxford Saïd, Cambridge Judge, Imperial, NUS
+
+## Jalur Utama: intake Agustus/September 2028 (direkomendasikan)
+MBA top AS realistis lewat Round 1 (September 2027). Intake 2027 untuk sekolah AS praktis sudah lewat.
+
 | Waktu | Kegiatan | LoA? |
 |---|---|---|
-| 25 Nov – 14 Des 2026 | Diagnostik GMAT (Official Practice Exam 1) + mock IELTS, shortlist 6–8 MBA | |
-| 1 – 15 Des 2026 | **Booking IELTS** (pertengahan Jan) dan **GMAT Focus** (akhir Feb) | |
-| 11 – 24 Jan 2027 | **Tes IELTS Academic** | |
-| 15 Jan – 28 Feb 2027 | **LPDP Tahap 1 2027 (perkiraan)**: pendaftaran | Tidak wajib saat daftar; unconditional wajib sebelum berangkat |
-| 22 Feb – 31 Mar 2027 | **GMAT Focus** percobaan 1 (+ ulang ≥16 hari kemudian jika perlu) | |
-| Mar – Apr 2027 | Seleksi LPDP (tes bakat skolastik, substansi) (perkiraan) | |
-| Mar – Apr 2027 | **Aplikasi MBA** UK/EU ronde 3–4 / rolling | |
-| 15 Apr – 30 Jun 2027 | Offer → penuhi syarat → **LoA unconditional** | Ya |
-| Mei – Jun 2027 | Pengumuman LPDP & PK (perkiraan) | |
-| Jun – Agu 2027 | CAS, visa pelajar, akomodasi | |
-| Sep 2027 | Mulai kuliah | |
+| 25 Nov – 21 Des 2026 | GMAT Official Practice Exam 1 + mock IELTS, baca class profile, rumuskan cerita karier | |
+| Jan – Mar 2027 | **Tes IELTS** (Feb–Mar), ulang jika ada band < 7.0 | |
+| Des 2026 – Agu 2027 | **GMAT Focus:** fondasi s.d. Mar, intensif Apr–Jun, **tes 1 ±Juni**, **tes 2 Jul–Agu** | |
+| Feb – Jun 2027 | Proyek kepemimpinan di kantor, info session, ngobrol dengan alumni, pilih pemberi rekomendasi | |
+| Jun – Jul 2027 | LPDP Tahap 2 2027 (perkiraan, opsional; cek aturan batas mulai studi) | Tidak wajib saat daftar |
+| Jun – Sep 2027 | Esai, resume, rekomendasi | |
+| Sep – pertengahan Okt 2027 | **Round 1:** 4–5 sekolah + Knight-Hennessy (perkiraan) | |
+| Agu – awal Nov 2027 | Chevening (perkiraan; hanya jika Oxford/Cambridge/Imperial) | Unconditional sebelum ±Juli 2028 |
+| Okt – Des 2027 | Interview → **keputusan R1 = LoA** | Ya |
+| Des 2027 – pertengahan Jan 2028 | Round 2 untuk sekolah cadangan (perkiraan) | |
+| Jan – Feb 2028 | **LPDP Tahap 1 2028** dengan LoA (perkiraan) | LoA memperkuat |
+| Mar – Mei 2028 | Keputusan R2, pengumuman LPDP, fellowship kampus, deposit | |
+| Mei – Jul 2028 | I-20, visa F-1 (atau CAS untuk UK), PK LPDP | |
+| Agu – Sep 2028 | Mulai kuliah | |
 
-Catatan: **Chevening untuk intake 2027 sudah tutup** (awal November 2026), jadi Chevening masuk Jalur B.
-
-## Jalur B: intake September 2028 (cadangan, peluang lebih tinggi)
-| Waktu | Kegiatan | LoA? |
-|---|---|---|
-| Feb – Apr 2027 | Australia Awards / Fulbright (perkiraan; MBA sering dibatasi, cek dulu) | Tidak |
-| Jun – Jul 2027 | LPDP Tahap 2 2027 (perkiraan) | Tidak wajib saat daftar |
-| Agu – awal Nov 2027 | **Chevening 2028/29** (perkiraan): 3 program UK, pengalaman kerja ≥ 2 tahun | Unconditional sebelum pertengahan Juli 2028 |
-| Sep 2027 – Jan 2028 | Aplikasi MBA ronde 1–2 (UK/EU/US) | |
-| Jan – Feb 2028 | LPDP Tahap 1 2028 (perkiraan) | |
-| Feb – 15 Jul 2028 | LoA unconditional | Ya |
-| Sep 2028 | Mulai kuliah | |
+## Jalur Cepat: intake September 2027 (opsional, peluang kecil)
+Hanya untuk MBA satu tahun di UK (Oxford/Cambridge/Imperial, tahap akhir Mar–Apr 2027) dengan LPDP Tahap 1 2027 (Jan–Feb). Butuh IELTS pertengahan Januari dan GMAT akhir Februari.
 
 ## Ritme belajar
-- **Setiap hari 06:00**: 10 soal di Prep Master (5 IELTS + 5 GMAT), ±20 menit.
-- **Fase 1 (25 Nov – 18 Jan)**: malam 60 menit IELTS (Writing 3×, Reading 2×), Sabtu mock IELTS, Minggu GMAT Quant dasar.
-- **Fase 2 (19 Jan – 28 Feb)**: malam 75 menit GMAT, Sabtu esai LPDP, Minggu satu section GMAT berwaktu.
-- **Fase 3 (Mar – Apr)**: review error log, esai & interview MBA.
-
-Checklist interaktif untuk setiap tahap ada di tab **Roadmap** aplikasi.
+- **Setiap hari 06:00:** 10 soal di Prep Master. 5 IELTS + 5 GMAT; otomatis menjadi 3 IELTS + 7 GMAT setelah tes IELTS dicentang di Roadmap.
+- **Fase 1 (Nov – Mar):** malam 60 mnt (IELTS 3×, GMAT Quant 2×), Sabtu mock IELTS, Minggu 2 jam GMAT Official Guide.
+- **Fase 2 (Apr – Agu):** malam 90 mnt GMAT, Sabtu Official Practice Exam, Minggu review error log.
+- **Fase 3 (Jun – Okt):** esai, alumni, interview.

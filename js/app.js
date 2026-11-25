@@ -6,7 +6,7 @@
  * {
  *   v: 1,
  *   updatedAt: epoch ms,
- *   track: "A" | "B",                     // jalur roadmap yang dipilih
+ *   track: "P" | "S",                     // jalur roadmap: Utama 2028 / Cepat 2027
  *   checklist: { [taskId]: true },        // centang tugas roadmap
  *   seen: { [questionId]: "YYYY-MM-DD" }, // terakhir kali soal muncul
  *   srs: { [questionId]: { box: 0..3, due: "YYYY-MM-DD", q?: Question } },
@@ -66,7 +66,7 @@
   }
 
   // ---------- state ----------
-  function emptyState() { return { v: 1, updatedAt: 0, track: "A", checklist: {}, seen: {}, srs: {}, days: {} }; }
+  function emptyState() { return { v: 1, updatedAt: 0, track: "P", checklist: {}, seen: {}, srs: {}, days: {} }; }
   function loadLocal() { try { const s = localStorage.getItem(STORE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
   function normalize(s) { const e = emptyState(); s = s && typeof s === "object" ? s : {}; Object.keys(e).forEach(function (k) { if (s[k] == null) s[k] = e[k]; }); return s; }
   let state = normalize(loadLocal());
@@ -94,7 +94,12 @@
   }
 
   // ---------- penyusun soal harian ----------
-  function pickFresh(pool, rng, n, exclude) {
+  // minDiff: utamakan soal dengan tingkat ≥ minDiff selama masih ada yang belum pernah muncul
+  function pickFresh(pool, rng, n, exclude, minDiff) {
+    if (minDiff) {
+      const hard = pool.filter(function (q) { return q.difficulty >= minDiff && !exclude.has(q.id) && !state.seen[q.id]; });
+      if (hard.length >= n) pool = hard;
+    }
     const order = shuffle(pool, rng).filter(function (q) { return !exclude.has(q.id); });
     order.sort(function (a, b) { const x = state.seen[a.id] || "", y = state.seen[b.id] || ""; return x < y ? -1 : x > y ? 1 : 0; });
     const out = order.slice(0, n);
@@ -113,6 +118,14 @@
     });
     if (!best) return [];
     return pickFresh(bank.questions.filter(function (q) { return q.passage === best; }), rng, n, exclude);
+  }
+
+  // Komposisi harian: 5 IELTS + 5 GMAT; setelah tes IELTS dicentang di roadmap → 3 IELTS + 7 GMAT.
+  function gmatHeavy() { return (RM.GMAT_HEAVY_TASKS || []).some(function (t) { return state.checklist[t]; }); }
+  function mixFor() {
+    return gmatHeavy()
+      ? { ielts: { Reading: 2 }, ieltsRotate: true, gmat: { Quant: 3, DS: 2, CR: 1, RC: 1 } }
+      : { ielts: { Reading: 2, Vocabulary: 1, Grammar: 1, Writing: 1 }, ieltsRotate: false, gmat: { Quant: 2, DS: 1, CR: 1, RC: 1 } };
   }
 
   function buildDay(key) {
@@ -136,23 +149,24 @@
     }
     const byKind = function (bank, kind) { return bank.questions.filter(function (q) { return kindOf(q) === kind; }); };
 
-    const nI = reduce({ Reading: 2, Vocabulary: 1, Grammar: 1, Writing: 1 }, revI);
+    const mix = mixFor();
+    const nI = reduce(Object.assign({}, mix.ielts, mix.ieltsRotate ? (function () { const o = {}; o[["Vocabulary", "Grammar", "Writing"][Math.floor(rng() * 3)]] = 1; return o; })() : {}), revI);
     const ielts = revI.slice();
     if (nI.Reading > 0) pickFromPassage(IELTS, rng, nI.Reading, exclude).forEach(function (q) { ielts.push(q.id); });
     ["Vocabulary", "Grammar", "Writing"].forEach(function (k) { if (nI[k] > 0) pickFresh(byKind(IELTS, k), rng, nI[k], exclude).forEach(function (q) { ielts.push(q.id); }); });
 
-    const nG = reduce({ Quant: 2, DS: 1, CR: 1, RC: 1 }, revG);
+    const nG = reduce(Object.assign({}, mix.gmat), revG);
     const gmat = revG.slice();
     if (nG.Quant > 0) {
-      const gens = shuffle(GENS, rng);
+      const gens = shuffle(GENS, rng).sort(function (a, b) { return (b.difficulty >= 2) - (a.difficulty >= 2); });
       let made = 0;
       for (let i = 0; i < gens.length && made < nG.Quant; i++) {
         const q = gens[i].make(rng);
         if (!exclude.has(q.id)) { gen[q.id] = q; gmat.push(q.id); exclude.add(q.id); made++; }
       }
     }
-    if (nG.DS > 0) pickFresh(byKind(GMAT, "DS"), rng, nG.DS, exclude).forEach(function (q) { gmat.push(q.id); });
-    if (nG.CR > 0) pickFresh(byKind(GMAT, "CR"), rng, nG.CR, exclude).forEach(function (q) { gmat.push(q.id); });
+    if (nG.DS > 0) pickFresh(byKind(GMAT, "DS"), rng, nG.DS, exclude, 2).forEach(function (q) { gmat.push(q.id); });
+    if (nG.CR > 0) pickFresh(byKind(GMAT, "CR"), rng, nG.CR, exclude, 2).forEach(function (q) { gmat.push(q.id); });
     if (nG.RC > 0) pickFromPassage(GMAT, rng, nG.RC, exclude).forEach(function (q) { gmat.push(q.id); });
 
     return { items: ielts.concat(gmat), review: revI.concat(revG), gen: gen, answers: {}, done: false };
@@ -265,7 +279,7 @@
     head.innerHTML =
       '<p class="eyebrow">Sesi pagi · ' + esc(fmtDate(today, true)) + "</p>" +
       "<h1>" + (day.done ? "Sesi hari ini selesai" : answered ? "Lanjutkan, " + (10 - answered) + " soal lagi" : "10 soal sebelum mulai hari") + "</h1>" +
-      '<p class="lede">' + (day.done ? "Kode buka sudah aktif. Pembahasan semua soal ada di bawah." : "5 IELTS + 5 GMAT. Aplikasi lain di HP terbuka setelah Anda memasukkan kode yang muncul di akhir sesi.") + "</p>";
+      '<p class="lede">' + (day.done ? "Kode buka sudah aktif. Pembahasan semua soal ada di bawah." : mixLabel(day) + ". Aplikasi lain di HP terbuka setelah Anda memasukkan kode yang muncul di akhir sesi.") + "</p>";
     root.appendChild(head);
 
     // bar progres 10 segmen
@@ -350,6 +364,11 @@
     det.innerHTML = "<summary>Pembahasan</summary><div class=\"exbody\"><p>" + rich(q.explanation) + "</p>" + (q.tip ? '<p class="tip"><b>Strategi:</b> ' + rich(q.tip) + "</p>" : "") + "</div>";
     det.addEventListener("toggle", function () { ui.open[q.id] = det.open; });
     return det;
+  }
+
+  function mixLabel(day) {
+    let i = 0; day.items.forEach(function (id) { const q = getQ(id, day); if (q && q.exam === "IELTS") i++; });
+    return i + " IELTS + " + (day.items.length - i) + " GMAT";
   }
 
   function renderDone(root, day) {
@@ -481,7 +500,7 @@
 
     const tog = el("div", "toggle"); tog.setAttribute("role", "tablist");
     RM.TRACKS.forEach(function (t) {
-      const b = el("button", t.id === track.id ? "on" : "", esc(t.id === "A" ? "Intake 2027" : "Intake 2028"));
+      const b = el("button", t.id === track.id ? "on" : "", esc(t.id === "P" ? "Utama · 2028" : "Cepat · 2027"));
       b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(t.id === track.id)); b.id = "track-" + t.id;
       b.addEventListener("click", function () { state.track = t.id; save(); renderRoadmap(); });
       tog.appendChild(b);
@@ -520,6 +539,11 @@
       tl.appendChild(li);
     });
     root.appendChild(tl);
+
+    let st = '<div class="tablewrap"><table><thead><tr><th>Sekolah</th><th>Negara</th><th>Format</th><th>Ronde (perkiraan)</th><th>Catatan</th></tr></thead><tbody>';
+    RM.SCHOOLS.forEach(function (s) { st += "<tr><td><b>" + esc(s.name) + "</b></td><td>" + esc(s.country) + "</td><td>" + esc(s.format) + "</td><td>" + esc(s.rounds) + "</td><td>" + esc(s.note) + "</td></tr>"; });
+    st += "</tbody></table></div>";
+    root.appendChild(el("section", "panel", "<h2>Sekolah target: M7 & QS top 10</h2>" + st + '<p class="muted small">Pengalaman kerja Anda ±4,5 tahun saat masuk 2028, sesuai rata-rata kelas M7. Strategi aplikasi: 2 reach (HBS, Stanford), 2–3 target (M7 lain), 1–2 cadangan kuat (Oxford/Cambridge/Imperial/NUS).</p>'));
 
     let tbl = '<div class="tablewrap"><table><thead><tr><th>Beasiswa</th><th>Jendela daftar</th><th>Perlu LoA?</th><th>Bahasa</th><th>MBA</th><th>Status</th></tr></thead><tbody>';
     RM.SCHOLARSHIPS.forEach(function (s) { tbl += "<tr><td><b>" + esc(s.name) + "</b></td><td>" + esc(s.window) + "</td><td>" + esc(s.loa) + "</td><td>" + esc(s.english) + "</td><td>" + esc(s.mba) + "</td><td>" + esc(s.status) + "</td></tr>"; });
