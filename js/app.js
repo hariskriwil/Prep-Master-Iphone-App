@@ -682,6 +682,7 @@
     const codeToday = unlockCode(today);
     const url = APP_URL || "(link artifact ini)";
     $("#appurl", root).textContent = url;
+    const su = $("#safariurl", root); if (su) su.textContent = APP_URL ? "x-safari-" + APP_URL : "x-safari-(link aplikasi)";
     $("#codetoday", root).textContent = String(codeToday);
   }
 

@@ -278,16 +278,18 @@ tr:last-child td { border-bottom: 0; }
       </section>
 
       <section class="panel popup">
-        <h2>1. Pop-up otomatis setiap jam 06:00</h2>
-        <p class="muted small">Langkah paling penting, cukup 1 menit. Kuis terbuka sendiri di layar tanpa perlu diketuk.</p>
+        <h2>1. Pop-up setiap pagi (dipicu alarm 06:00)</h2>
+        <p class="muted small">Otomasi "Time of Day" sering tampak tidak jalan karena jam 6 HP masih terkunci: iPhone tidak bisa membuka Safari di atas layar kunci. Pemicu yang lebih andal adalah saat Anda mematikan alarm, karena saat itu HP sedang di tangan.</p>
         <ol class="steps">
-          <li>Buka app <b>Shortcuts</b> → tab <b>Automation</b> → <b>+</b> (atau <b>New Automation</b>).</li>
-          <li>Pilih <b>Time of Day</b> → <b>06:00</b> → Repeat <b>Daily</b>.</li>
-          <li>Pilih <b>Run Immediately</b> (bukan "Run After Confirmation") dan matikan <b>Notify When Run</b>. Ketuk Next.</li>
-          <li>Pilih <b>New Blank Automation</b> → tambah aksi <b>Open URLs</b> → tempel link aplikasi di atas → Done.</li>
-          <li>Uji: ubah sementara jam otomasi ke 2 menit dari sekarang, kunci HP, tunggu. Kuis harus terbuka sendiri. Kembalikan ke 06:00.</li>
+          <li>App <b>Clock</b> → Alarm → buat alarm <b>06:00</b>, Repeat setiap hari, Label <code>Prep</code>.</li>
+          <li>App <b>Shortcuts</b> → tab <b>Automation</b> → <b>+</b> → <b>Alarm</b>.</li>
+          <li>Pilih <b>Is Stopped</b>, ketuk <b>Existing</b> → pilih alarm <code>Prep</code>.</li>
+          <li>Pilih <b>Run Immediately</b>, matikan <b>Notify When Run</b> → Next → <b>New Blank Automation</b>.</li>
+          <li>Tambah aksi <b>Open URLs</b> dan isi dengan link di bawah. Awalan <code>x-safari-</code> memaksa link terbuka di Safari, bukan di app lain:<br><span class="mono" id="safariurl"></span></li>
+          <li>Matikan alarm dengan tombol <b>Stop</b>, bukan Snooze, lalu buka kunci HP. Kuis sudah terbuka.</li>
         </ol>
-        <p class="note">Agar pasti bangun: pasang juga alarm Clock jam 06:00. Otomasi ini membuka kuis tepat saat alarm berbunyi.</p>
+        <p class="note"><b>Uji sekarang:</b> buat alarm 2 menit dari sekarang dengan label yang sama, biarkan berbunyi, ketuk Stop, buka kunci HP. Jika kuis tidak terbuka, buka tab Automation dan pastikan otomasinya aktif dan bertuliskan "When alarm Prep is stopped".</p>
+        <p class="muted small">Cadangan: otomasi <b>Time of Day 06:00</b> (Run Immediately) dengan aksi yang sama tetap boleh dipasang. Otomasi itu bekerja jika HP sudah terbuka jam 6.</p>
       </section>
 
       <section class="panel">
@@ -302,7 +304,7 @@ tr:last-child td { border-bottom: 0; }
           <li>Tambah <b>Ask for Input</b>: tipe <b>Number</b>, pertanyaan <code>Kode buka dari Prep Master?</code></li>
           <li>Tambah <b>If</b>: <i>Provided Input</i> <b>is</b> <i>Calculation Result</i> (hasil Modulus):
             <br>– <b>Then</b>: <b>Save File</b> berisi <i>Formatted Date</i> ke <code>Shortcuts/PrepMaster/selesai.txt</code> dengan <b>Overwrite</b> menyala, lalu <b>Show Notification</b> <code>Terbuka. Semangat!</code>
-            <br>– <b>Otherwise</b>: <b>Open URLs</b> dengan link aplikasi di atas.</li>
+            <br>– <b>Otherwise</b>: <b>Open URLs</b> dengan link berawalan <code>x-safari-</code> seperti di langkah 1.</li>
         </ol>
         <p class="note">Kode hari ini: <b class="mono" id="codetoday"></b>. Rumusnya sama dengan di Shortcuts: (tanggal yyyyMMdd × 37 + 4242) mod 9973. Pakai untuk menguji shortcut setelah dibuat.</p>
       </section>
