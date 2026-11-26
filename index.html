@@ -269,7 +269,7 @@ tr:last-child td { border-bottom: 0; }
     <div id="view-roadmap" hidden></div>
     <div id="view-setup" hidden>
       <section class="pagehead"><p class="eyebrow">Setup iPhone</p><h1>Kunci HP sampai kuis pagi selesai</h1>
-        <p class="lede">Gratis, memakai app Shortcuts bawaan iPhone. Setiap jam 06:00 kuis terbuka otomatis. Saat Anda membuka app pengalih perhatian (Instagram, TikTok, YouTube, dll.) sebelum kuis selesai, iPhone meminta kode buka. Kode hanya muncul setelah 10 soal terjawab.</p></section>
+        <p class="lede">Gratis, memakai app Shortcuts bawaan iPhone. Setelah jam 06:00, kapan pun Anda bangun, pemakaian HP pertama (cabut charger, matikan alarm, atau buka app apa pun yang Anda pilih) langsung membuka kuis selama sesi hari itu belum selesai. Gerbang baru terbuka setelah Anda memasukkan kode yang muncul di akhir kuis.</p></section>
 
       <section class="panel">
         <h2>Link aplikasi</h2>
@@ -277,45 +277,55 @@ tr:last-child td { border-bottom: 0; }
         <p class="muted small">Buka link ini di Safari dan login ke claude.ai sekali. Progres tersimpan di akun Anda, jadi sama di Safari maupun app Claude.</p>
       </section>
 
-      <section class="panel popup">
-        <h2>1. Pop-up setiap pagi (dipicu alarm 06:00)</h2>
-        <p class="muted small">Otomasi "Time of Day" sering tampak tidak jalan karena jam 6 HP masih terkunci: iPhone tidak bisa membuka Safari di atas layar kunci. Pemicu yang lebih andal adalah saat Anda mematikan alarm, karena saat itu HP sedang di tangan.</p>
-        <ol class="steps">
-          <li>App <b>Clock</b> → Alarm → buat alarm <b>06:00</b>, Repeat setiap hari, Label <code>Prep</code>.</li>
-          <li>App <b>Shortcuts</b> → tab <b>Automation</b> → <b>+</b> → <b>Alarm</b>.</li>
-          <li>Pilih <b>Is Stopped</b>, ketuk <b>Existing</b> → pilih alarm <code>Prep</code>.</li>
-          <li>Pilih <b>Run Immediately</b>, matikan <b>Notify When Run</b> → Next → <b>New Blank Automation</b>.</li>
-          <li>Tambah aksi <b>Open URLs</b> dan isi dengan link di bawah. Awalan <code>x-safari-</code> memaksa link terbuka di Safari, bukan di app lain:<br><span class="mono" id="safariurl"></span></li>
-          <li>Matikan alarm dengan tombol <b>Stop</b>, bukan Snooze, lalu buka kunci HP. Kuis sudah terbuka.</li>
-        </ol>
-        <p class="note"><b>Uji sekarang:</b> buat alarm 2 menit dari sekarang dengan label yang sama, biarkan berbunyi, ketuk Stop, buka kunci HP. Jika kuis tidak terbuka, buka tab Automation dan pastikan otomasinya aktif dan bertuliskan "When alarm Prep is stopped".</p>
-        <p class="muted small">Cadangan: otomasi <b>Time of Day 06:00</b> (Run Immediately) dengan aksi yang sama tetap boleh dipasang. Otomasi itu bekerja jika HP sudah terbuka jam 6.</p>
+      <section class="panel">
+        <h2>Cara kerjanya</h2>
+        <ul class="steps">
+          <li><b>Gerbang Prep</b> (shortcut tanpa pertanyaan): jika sudah lewat 06:00 dan kuis hari ini belum dibuka kuncinya, Safari langsung membuka kuis. Tidak ada tombol Cancel untuk kabur.</li>
+          <li><b>Prep Selesai</b> (ikon di Home Screen): setelah 10 soal selesai, ketuk ikon ini dan masukkan kode. Gerbang terbuka sampai besok pagi jam 06:00.</li>
+          <li><b>Pemicu</b>: cabut charger, alarm dimatikan, jam 06:00, dan setiap kali membuka app yang Anda pilih. Semuanya menjalankan Gerbang Prep.</li>
+        </ul>
       </section>
 
       <section class="panel">
-        <h2>2. Buat shortcut "Gerbang Prep"</h2>
+        <h2>1. Shortcut "Gerbang Prep"</h2>
         <ol class="steps">
-          <li>Buka app <b>Shortcuts</b> → tab Shortcuts → <b>+</b>. Beri nama <code>Gerbang Prep</code>.</li>
-          <li>Tambah aksi <b>Get File</b> (Dapatkan File): folder <code>Shortcuts</code>, path <code>PrepMaster/selesai.txt</code>. Matikan <b>Error If Not Found</b>.</li>
-          <li>Tambah <b>Get Text from Input</b> dengan input <i>File</i>.</li>
-          <li>Tambah <b>Format Date</b>: tanggal <i>Current Date</i>, Date Format <b>Custom</b> = <code>yyyyMMdd</code>, Time Format <b>None</b>.</li>
-          <li>Tambah <b>If</b>: <i>Text</i> <b>is</b> <i>Formatted Date</i> → di dalamnya <b>Stop This Shortcut</b>. (Artinya: sudah buka hari ini, biarkan lewat.)</li>
-          <li>Di bawah blok If (setelah End If), tambah tiga <b>Calculate</b> berurutan:<br><i>Formatted Date</i> × <code>37</code> → hasil + <code>4242</code> → hasil <b>Modulus</b> <code>9973</code>.</li>
-          <li>Tambah <b>Ask for Input</b>: tipe <b>Number</b>, pertanyaan <code>Kode buka dari Prep Master?</code></li>
-          <li>Tambah <b>If</b>: <i>Provided Input</i> <b>is</b> <i>Calculation Result</i> (hasil Modulus):
-            <br>– <b>Then</b>: <b>Save File</b> berisi <i>Formatted Date</i> ke <code>Shortcuts/PrepMaster/selesai.txt</code> dengan <b>Overwrite</b> menyala, lalu <b>Show Notification</b> <code>Terbuka. Semangat!</code>
-            <br>– <b>Otherwise</b>: <b>Open URLs</b> dengan link berawalan <code>x-safari-</code> seperti di langkah 1.</li>
+          <li>Shortcuts → tab Shortcuts → <b>+</b>, beri nama <code>Gerbang Prep</code>. (Jika sudah ada versi lama, hapus semua aksinya dan susun ulang.)</li>
+          <li><b>Format Date</b>: <i>Current Date</i>, Date Format <b>None</b>, Time Format <b>Custom</b> = <code>H</code> (jam 0–23).</li>
+          <li><b>Number</b>: isi dengan variabel <i>Formatted Date</i> dari langkah 2.</li>
+          <li><b>If</b> <i>Number</i> <b>is less than</b> <code>6</code> → di dalamnya <b>Stop This Shortcut</b>. End If.</li>
+          <li><b>Get File</b>: folder <code>Shortcuts</code>, path <code>PrepMaster/selesai.txt</code>, <b>Error If Not Found</b> dimatikan.</li>
+          <li><b>Get Text from Input</b> dengan input <i>File</i>.</li>
+          <li><b>Format Date</b>: <i>Current Date</i>, Date Format <b>Custom</b> = <code>yyyyMMdd</code>, Time Format <b>None</b>.</li>
+          <li><b>If</b> <i>Text</i> <b>is</b> <i>Formatted Date</i> (langkah 7) → <b>Stop This Shortcut</b>. End If.</li>
+          <li><b>Open URLs</b>: <span class="mono" id="safariurl2"></span></li>
         </ol>
-        <p class="note">Kode hari ini: <b class="mono" id="codetoday"></b>. Rumusnya sama dengan di Shortcuts: (tanggal yyyyMMdd × 37 + 4242) mod 9973. Pakai untuk menguji shortcut setelah dibuat.</p>
       </section>
 
       <section class="panel">
-        <h2>3. Gerbang saat membuka app lain</h2>
+        <h2>2. Shortcut "Prep Selesai" (ikon Home Screen)</h2>
         <ol class="steps">
-          <li>Automation → <b>+</b> → <b>App</b> → pilih app yang ingin dikunci (Instagram, TikTok, YouTube, X, WhatsApp, game). Centang <b>Is Opened</b>.</li>
-          <li><b>Run Immediately</b>, aksi: <b>Run Shortcut</b> → <code>Gerbang Prep</code>.</li>
-          <li>Hasilnya: sebelum kuis selesai, setiap kali app itu dibuka Anda diminta kode; jika salah atau dibatalkan, iPhone langsung membuka kuis.</li>
+          <li>Shortcut baru bernama <code>Prep Selesai</code>.</li>
+          <li><b>Format Date</b>: <i>Current Date</i>, Date Format <b>Custom</b> = <code>yyyyMMdd</code>, Time Format <b>None</b>.</li>
+          <li>Tiga <b>Calculate</b> berurutan: <i>Formatted Date</i> × <code>37</code> → hasil + <code>4242</code> → hasil <b>Modulus</b> <code>9973</code>.</li>
+          <li><b>Ask for Input</b>: tipe <b>Number</b>, pertanyaan <code>Kode buka hari ini?</code></li>
+          <li><b>If</b> <i>Provided Input</i> <b>is</b> <i>Calculation Result</i>:
+            <br>– Then: <b>Save File</b> berisi <i>Formatted Date</i> ke <code>Shortcuts/PrepMaster/selesai.txt</code>, <b>Overwrite If File Exists</b> menyala, lalu <b>Show Notification</b> <code>Terbuka sampai besok 06:00</code>.
+            <br>– Otherwise: <b>Open URLs</b> dengan link kuis yang sama.</li>
+          <li>Ketuk ⓘ / Details → <b>Add to Home Screen</b>.</li>
         </ol>
+        <p class="note">Kode hari ini: <b class="mono" id="codetoday"></b>. Rumus: (tanggal yyyyMMdd × 37 + 4242) mod 9973. Kode juga tampil di akhir kuis.</p>
+      </section>
+
+      <section class="panel">
+        <h2>3. Pemicu: pemakaian HP pertama setelah bangun</h2>
+        <p class="muted small">Buat setiap otomasi lewat Shortcuts → Automation → <b>+</b>, pilih <b>Run Immediately</b>, matikan <b>Notify When Run</b>, lalu aksi <b>Run Shortcut</b> → <code>Gerbang Prep</code>.</p>
+        <ol class="steps">
+          <li><b>Charger</b> → <b>Is Disconnected</b>. Bangun jam berapa pun dan mencabut HP, kuis langsung terbuka.</li>
+          <li><b>Alarm</b> → <b>Is Stopped</b> → pilih <b>Any</b> (semua alarm). Ganti otomasi alarm lama yang langsung membuka link.</li>
+          <li><b>App</b> → <b>Is Opened</b> → pilih semua app yang biasa Anda buka pertama kali: WhatsApp, Instagram, TikTok, YouTube, X, Telegram, Mail, Chrome, Shopee/Tokopedia, game. <b>Jangan pilih Safari dan Shortcuts</b> (tempat kuis dan kode).</li>
+          <li><b>Time of Day</b> → 06:00 Daily. Menangkap kasus HP sudah terbuka saat jam 6.</li>
+        </ol>
+        <p class="note"><b>Uji:</b> pastikan belum memasukkan kode hari ini, lalu buka WhatsApp. Safari harus langsung menampilkan kuis. Setelah memasukkan kode di Prep Selesai, WhatsApp terbuka normal sampai besok jam 06:00.</p>
       </section>
 
       <section class="panel">

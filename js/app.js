@@ -382,7 +382,7 @@
     done.innerHTML =
       '<div class="score"><span class="big">' + sum.correct + '</span><span class="of">/ ' + sum.total + '</span><span class="pct">' + pct + "%</span></div>" +
       '<div class="code"><p class="eyebrow">Kode buka hari ini</p><p class="codeval" id="codeval">' + code + '</p><button type="button" class="ghost" id="copycode">Salin kode</button></div>' +
-      '<p class="muted small">Masukkan kode ini saat Shortcuts "Gerbang Prep" memintanya. Kode berganti setiap hari.</p>';
+      '<p class="muted small">Ketuk ikon <b>Prep Selesai</b> di Home Screen dan masukkan kode ini. Semua app terbuka sampai besok jam 06:00.</p>';
     root.appendChild(done);
     $("#copycode", done).addEventListener("click", function (ev) {
       const b = ev.currentTarget;
@@ -682,7 +682,7 @@
     const codeToday = unlockCode(today);
     const url = APP_URL || "(link artifact ini)";
     $("#appurl", root).textContent = url;
-    const su = $("#safariurl", root); if (su) su.textContent = APP_URL ? "x-safari-" + APP_URL : "x-safari-(link aplikasi)";
+    ["#safariurl", "#safariurl2"].forEach(function (sel) { const su = $(sel, root); if (su) su.textContent = APP_URL ? "x-safari-" + APP_URL : "x-safari-(link aplikasi)"; });
     $("#codetoday", root).textContent = String(codeToday);
   }
 
